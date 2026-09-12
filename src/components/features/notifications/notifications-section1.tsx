@@ -15,7 +15,6 @@ import {
   type NotificationCardProps 
 } from "@/components/ui/notification-card";
 
-// Extends card props to track read state internally
 interface NotificationItem extends NotificationCardProps {
   categoryFilter: "All Notifications" | "New Movies" | "Booking Updates" | "System Alerts" | "Promotions";
 }
@@ -173,7 +172,6 @@ export function NotificationsSection1({ notifications: apiNotifications = INITIA
 
       <div className="container mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* Left Sidebar Category Navigation */}
         <div className="lg:col-span-3 bg-[#12171f] border border-[#1f2633] rounded-2xl p-3 space-y-1">
           {SIDEBAR_CATEGORIES.map((cat) => {
             const Icon = cat.icon;
@@ -214,7 +212,6 @@ export function NotificationsSection1({ notifications: apiNotifications = INITIA
           })}
         </div>
 
-        {/* Right Main Content Area */}
         <div className="lg:col-span-9 space-y-6">
           
           {/* Header Bar */}
@@ -230,7 +227,6 @@ export function NotificationsSection1({ notifications: apiNotifications = INITIA
             </button>
           </div>
 
-          {/* Notifications List */}
           {loading ? (
             <div className="py-20 text-center text-gray-400">Loading notifications...</div>
           ) : filteredNotifications.length > 0 ? (
@@ -267,7 +263,6 @@ export function NotificationsSection1({ notifications: apiNotifications = INITIA
             </div>
           )}
 
-          {/* Pagination Controls */}
           {filteredNotifications.length > 0 && (
             <div className="flex items-center justify-center gap-3 pt-6 text-sm">
               <button

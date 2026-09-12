@@ -6,7 +6,6 @@ export function Footer() {
     <footer className="w-full bg-[#0b0e13] border-t border-gray-800/60 text-white py-6">
       <div className="container mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-4">
         
-        {/* Left: Brand Logo */}
         <NavLink to="/" className="flex items-center gap-2 group">
           <div className="text-red-600 transition-transform group-hover:scale-105">
             <Film className="w-6 h-6 fill-red-600/20" />
@@ -16,12 +15,10 @@ export function Footer() {
           </span>
         </NavLink>
 
-        {/* Center: Tagline */}
         <p className="text-xs md:text-sm text-gray-400 text-center">
           Book your favorite movies, anytime, anywhere.
         </p>
 
-        {/* Right: Social Media Icons */}
         <div className="flex items-center gap-4 text-gray-400">
           <a
             href="https://facebook.com"

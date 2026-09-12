@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Heart } from "lucide-react";
-import wallpaper1 from "@/assets/wallpaper1.webp"; // Adjust path/extension if needed
+import wallpaper1 from "@/assets/wallpaper1.webp";
 
 export function FavoritesHeroSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -29,7 +29,6 @@ export function FavoritesHeroSection() {
       ref={sectionRef} 
       className="relative w-full h-[280px] md:h-[320px] flex items-center overflow-hidden bg-black text-white"
     >
-      {/* Component-scoped CSS Keyframes */}
       <style>{`
         @keyframes fadeInUp {
           from {
@@ -46,7 +45,6 @@ export function FavoritesHeroSection() {
         }
       `}</style>
 
-      {/* Background Image with Dark Overlay */}
       <div className="absolute inset-0 z-0">
         <img
           src={wallpaper1}
@@ -56,11 +54,9 @@ export function FavoritesHeroSection() {
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
       </div>
 
-      {/* Content Container */}
       <div className="relative z-10 container mx-auto px-6 md:px-12 flex items-center">
         <div className="max-w-xl space-y-3">
           
-          {/* Animated Heading with Red Heart Icon */}
           <div 
             className={`flex items-center gap-3 opacity-0 ${
               isVisible ? "animate-up" : ""
@@ -73,7 +69,6 @@ export function FavoritesHeroSection() {
             </h1>
           </div>
 
-          {/* Animated Tagline */}
           <p 
             className={`text-sm md:text-base text-gray-300 font-normal leading-relaxed opacity-0 ${
               isVisible ? "animate-up" : ""

@@ -106,7 +106,6 @@ export function HomeSection1({ movies = [], loading = false, favoriteIds = [], o
                   isFavorite={favoriteIds.includes(String(movie.id))}
                   onToggleFavorite={onToggleFavorite}
                   onViewDetails={() => {
-                    // Handle view details navigation
                   }}
                 />
               </div>

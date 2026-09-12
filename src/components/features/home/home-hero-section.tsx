@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import wallpaper1 from "@/assets/wallpaper1.webp"; // Adjust path/extension if needed
+import wallpaper1 from "@/assets/wallpaper1.webp";
 
 export function HomeHeroSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -12,10 +12,10 @@ export function HomeHeroSection() {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-          observer.disconnect(); // Runs animation once when scrolled into view
+          observer.disconnect();
         }
       },
-      { threshold: 0.2 } // Triggers when 20% of the component is visible
+      { threshold: 0.2 }
     );
 
     if (sectionRef.current) {
@@ -30,7 +30,6 @@ export function HomeHeroSection() {
       ref={sectionRef} 
       className="relative w-full h-[350px] md:h-[400px] flex items-center overflow-hidden bg-black text-white"
     >
-      {/* Component-scoped CSS Keyframes */}
       <style>{`
         @keyframes fadeInUp {
           from {
@@ -47,7 +46,6 @@ export function HomeHeroSection() {
         }
       `}</style>
 
-      {/* Background Image with Dark Overlay */}
       <div className="absolute inset-0 z-0">
         <img
           src={wallpaper1}
@@ -57,12 +55,9 @@ export function HomeHeroSection() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
       </div>
 
-      {/* Content Container */}
       <div className="relative z-10 container mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-8">
         
-        {/* Left Heading & Tagline */}
         <div className="max-w-md space-y-3">
-          {/* Animated Heading - Step 1 */}
           <h1 
             className={`text-4xl md:text-5xl font-extrabold tracking-tight leading-tight opacity-0 ${
               isVisible ? "animate-up" : ""
@@ -73,7 +68,6 @@ export function HomeHeroSection() {
             <span className="text-red-600">Movie Awaits</span>
           </h1>
 
-          {/* Animated Tagline - Step 2 */}
           <p 
             className={`text-sm md:text-base text-gray-300 font-normal leading-relaxed opacity-0 ${
               isVisible ? "animate-up" : ""
@@ -85,14 +79,12 @@ export function HomeHeroSection() {
           </p>
         </div>
 
-        {/* Right Search Bar & Filter Button - Step 3 */}
         <div 
           className={`flex items-center gap-3 w-full max-w-lg opacity-0 ${
             isVisible ? "animate-up" : ""
           }`}
           style={{ animationDelay: "500ms" }}
         >
-          {/* Search Input Box */}
           <div className="relative flex-1 flex items-center">
             <Search className="absolute left-4 w-5 h-5 text-gray-400" />
             <input
@@ -102,7 +94,6 @@ export function HomeHeroSection() {
             />
           </div>
 
-          {/* Filter Button using custom Button component */}
           <Button variant="primary" className="flex items-center gap-2 py-3 px-5">
             <SlidersHorizontal className="w-4 h-4" />
             <span>Filter</span>

@@ -175,7 +175,6 @@ export function TransactionsSection1({ transactions = MOCK_TRANSACTIONS, loading
       `}</style>
 
       <div className="container mx-auto space-y-6">
-        {/* Top Controls: Status Tabs + Search Input */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
           <div className="flex items-center gap-1.5 overflow-x-auto pb-2 sm:pb-0 scrollbar-none">
             {TABS.map((tab) => {
@@ -208,7 +207,6 @@ export function TransactionsSection1({ transactions = MOCK_TRANSACTIONS, loading
           </div>
         </div>
 
-        {/* Transactions List */}
         {loading ? (
           <div className="py-20 text-center text-gray-400">Loading transactions...</div>
         ) : filteredTransactions.length > 0 ? (
@@ -232,7 +230,6 @@ export function TransactionsSection1({ transactions = MOCK_TRANSACTIONS, loading
           </div>
         )}
 
-        {/* Pagination Controls */}
         {filteredTransactions.length > ITEMS_PER_PAGE && (
           <div className="flex items-center justify-center gap-3 pt-6 text-sm">
             <button
@@ -270,7 +267,6 @@ export function TransactionsSection1({ transactions = MOCK_TRANSACTIONS, loading
         )}
       </div>
 
-      {/* Ticket Details Popup Modal */}
       {selectedTicket && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-[2px] transition-all"
@@ -294,7 +290,6 @@ export function TransactionsSection1({ transactions = MOCK_TRANSACTIONS, loading
               </button>
             </div>
 
-            {/* Movie Banner Info */}
             <div className="flex gap-4 items-start">
               <img
                 src={selectedTicket.image}
@@ -321,7 +316,6 @@ export function TransactionsSection1({ transactions = MOCK_TRANSACTIONS, loading
               </div>
             </div>
 
-            {/* Ticket Key Info Grid */}
             <div className="grid grid-cols-2 gap-3 bg-[#0b0e13] p-4 rounded-xl border border-gray-800/80 text-xs">
               <div className="flex items-center gap-2 text-gray-300">
                 <Calendar className="w-3.5 h-3.5 text-red-500 shrink-0" />
@@ -344,7 +338,6 @@ export function TransactionsSection1({ transactions = MOCK_TRANSACTIONS, loading
               </div>
             </div>
 
-            {/* Payment Summary & Status */}
             <div className="flex items-center justify-between pt-2">
               <div>
                 <p className="text-[10px] text-gray-400">Total Amount</p>

@@ -51,7 +51,6 @@ export function ProfileSection1({ profile, loading = false }: ProfileSection1Pro
 
       <div className="container mx-auto max-w-4xl space-y-6">
         
-        {/* Section Header */}
         <div className="border-b border-gray-800/80 pb-4 flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-white">Personal Information</h2>
@@ -69,7 +68,6 @@ export function ProfileSection1({ profile, loading = false }: ProfileSection1Pro
           >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
-            {/* First Name */}
             <div className="space-y-2">
               <label className="text-xs font-semibold text-gray-400 flex items-center gap-2">
                 <User className="w-3.5 h-3.5 text-red-500" />
@@ -83,7 +81,6 @@ export function ProfileSection1({ profile, loading = false }: ProfileSection1Pro
               />
             </div>
 
-            {/* Middle Name */}
             <div className="space-y-2">
               <label className="text-xs font-semibold text-gray-400 flex items-center gap-2">
                 <User className="w-3.5 h-3.5 text-red-500" />
@@ -97,7 +94,6 @@ export function ProfileSection1({ profile, loading = false }: ProfileSection1Pro
               />
             </div>
 
-            {/* Last Name */}
             <div className="space-y-2">
               <label className="text-xs font-semibold text-gray-400 flex items-center gap-2">
                 <User className="w-3.5 h-3.5 text-red-500" />
@@ -111,7 +107,6 @@ export function ProfileSection1({ profile, loading = false }: ProfileSection1Pro
               />
             </div>
 
-            {/* Age */}
             <div className="space-y-2">
               <label className="text-xs font-semibold text-gray-400 flex items-center gap-2">
                 <Hash className="w-3.5 h-3.5 text-red-500" />
@@ -125,7 +120,6 @@ export function ProfileSection1({ profile, loading = false }: ProfileSection1Pro
               />
             </div>
 
-            {/* Birthday */}
             <div className="space-y-2">
               <label className="text-xs font-semibold text-gray-400 flex items-center gap-2">
                 <Calendar className="w-3.5 h-3.5 text-red-500" />
@@ -139,7 +133,6 @@ export function ProfileSection1({ profile, loading = false }: ProfileSection1Pro
               />
             </div>
 
-            {/* Gender */}
             <div className="space-y-2">
               <label className="text-xs font-semibold text-gray-400 flex items-center gap-2">
                 <Users className="w-3.5 h-3.5 text-red-500" />
@@ -153,7 +146,6 @@ export function ProfileSection1({ profile, loading = false }: ProfileSection1Pro
               />
             </div>
 
-            {/* Phone Number (Spans 3 cols on medium screens) */}
             <div className="space-y-2 md:col-span-3">
               <label className="text-xs font-semibold text-gray-400 flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-red-500" />
@@ -167,7 +159,6 @@ export function ProfileSection1({ profile, loading = false }: ProfileSection1Pro
               />
             </div>
 
-            {/* Email Address (Spans 3 cols on medium screens) */}
             <div className="space-y-2 md:col-span-3">
               <label className="text-xs font-semibold text-gray-400 flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-red-500" />
@@ -181,7 +172,6 @@ export function ProfileSection1({ profile, loading = false }: ProfileSection1Pro
               />
             </div>
 
-            {/* Physical Address (Spans 3 cols on medium screens) */}
             <div className="space-y-2 md:col-span-3">
               <label className="text-xs font-semibold text-gray-400 flex items-center gap-2">
                 <MapPin className="w-3.5 h-3.5 text-red-500" />

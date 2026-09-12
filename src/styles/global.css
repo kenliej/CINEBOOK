@@ -23,7 +23,6 @@ body {
   flex-direction: column;
 }
 
-/* Custom dark scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
 }

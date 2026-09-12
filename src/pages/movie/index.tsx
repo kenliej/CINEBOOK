@@ -41,7 +41,6 @@ export default function MovieDetails() {
 
   return (
     <div className="min-h-screen bg-[#0b0e13] text-white flex flex-col">
-      {/* HERO BANNER SECTION */}
       <section className="relative w-full h-[220px] md:h-[280px] overflow-hidden bg-black">
         <div className="absolute inset-0 z-0">
           <img src={wallpaper1} alt="Background" className="w-full h-full object-cover opacity-30" />
@@ -49,11 +48,9 @@ export default function MovieDetails() {
         </div>
       </section>
 
-      {/* MAIN CONTENT SECTION */}
       <section className="relative z-20 container mx-auto px-6 md:px-12 -mt-36 md:-mt-44 pb-16 flex-1">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 items-start">
           
-          {/* Left Column: Back Button + Poster */}
           <div className="flex flex-col gap-3 shrink-0">
             <button
               onClick={() => navigate("/")}
@@ -74,7 +71,6 @@ export default function MovieDetails() {
             </div>
           </div>
 
-          {/* Movie Details Info */}
           <div className="md:col-span-2 space-y-6 pt-0 md:pt-10">
             <div className="space-y-2">
               <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-600/20 text-red-500 border border-red-600/30">
@@ -85,7 +81,6 @@ export default function MovieDetails() {
               </h1>
             </div>
 
-            {/* Quick Meta Badges */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
               <div className="bg-[#12171f] border border-[#1f2633] rounded-xl p-3 flex flex-col gap-1">
                 <span className="text-[10px] text-gray-400 flex items-center gap-1">
@@ -113,7 +108,6 @@ export default function MovieDetails() {
               </div>
             </div>
 
-            {/* Synopsis */}
             <div className="bg-[#12171f] border border-[#1f2633] rounded-2xl p-6 space-y-2">
               <h3 className="text-sm font-bold text-gray-300 flex items-center gap-2">
                 <Film className="w-4 h-4 text-red-500" /> Synopsis
@@ -121,7 +115,6 @@ export default function MovieDetails() {
               <p className="text-sm text-gray-400 leading-relaxed">{movie.description}</p>
             </div>
 
-            {/* Price & Trigger Button */}
             <div className="bg-[#12171f] border border-[#1f2633] rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
                 <span className="text-xs text-gray-400 block">Ticket Price</span>
@@ -146,7 +139,6 @@ export default function MovieDetails() {
         </div>
       </section>
 
-      {/* REUSABLE RESERVATION POPUP COMPONENT */}
       <ReservePopup 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 

@@ -64,7 +64,6 @@ export function MovieCard({
 
   return (
     <div className="w-full max-w-[280px] bg-[#11161d] border border-gray-800 rounded-2xl overflow-hidden shadow-lg flex flex-col text-white">
-      {/* Poster Image & Badges */}
       <div className="relative w-full h-[180px] overflow-hidden group">
         <img
           src={image}
@@ -72,7 +71,6 @@ export function MovieCard({
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
 
-        {/* Favorite Button (Top-Left) */}
         <button
           type="button"
           onClick={handleFavoriteClick}
@@ -86,7 +84,6 @@ export function MovieCard({
           />
         </button>
 
-        {/* Status Badge (Top-Right) */}
         <div className="absolute top-3 right-3">
           <span className="bg-emerald-600/90 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md backdrop-blur-sm">
             {status}
@@ -94,9 +91,7 @@ export function MovieCard({
         </div>
       </div>
 
-      {/* Card Body */}
       <div className="p-4 flex flex-col flex-1 gap-3">
-        {/* Title & Genres */}
         <div>
           <h3 className="font-bold text-base leading-snug text-white line-clamp-1">
             {title}
@@ -106,7 +101,6 @@ export function MovieCard({
           </p>
         </div>
 
-        {/* Metadata Details */}
         <div className="space-y-2 text-xs text-gray-300 my-1">
           <div className="flex items-center gap-2.5">
             <Calendar className="w-4 h-4 text-gray-400 shrink-0" />
@@ -128,7 +122,6 @@ export function MovieCard({
           </div>
         </div>
 
-        {/* Action Button */}
         <div className="mt-auto pt-2">
           <Button
             variant="primary"

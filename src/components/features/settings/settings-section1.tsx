@@ -9,12 +9,10 @@ export function SettingsSection1({ loading = false }: SettingsSection1Props) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
-  // Form State
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Visibility Toggles
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -39,7 +37,6 @@ export function SettingsSection1({ loading = false }: SettingsSection1Props) {
 
   const handlePasswordUpdate = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle password update logic here
   };
 
   return (
@@ -73,7 +70,6 @@ export function SettingsSection1({ loading = false }: SettingsSection1Props) {
             }`}
             style={{ animationDelay: "100ms" }}
           >
-          {/* Card Header */}
           <div className="border-b border-gray-800/80 pb-4 flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-red-600/10 text-red-500 border border-red-600/20">
               <KeyRound className="w-5 h-5" />
@@ -84,10 +80,8 @@ export function SettingsSection1({ loading = false }: SettingsSection1Props) {
             </div>
           </div>
 
-          {/* Form */}
           <form onSubmit={handlePasswordUpdate} className="space-y-4">
             
-            {/* Input 1: Current Password */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-gray-300">
                 Current Password
@@ -111,7 +105,6 @@ export function SettingsSection1({ loading = false }: SettingsSection1Props) {
               </div>
             </div>
 
-            {/* Input 2: New Password */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-gray-300">
                 New Password
@@ -135,7 +128,6 @@ export function SettingsSection1({ loading = false }: SettingsSection1Props) {
               </div>
             </div>
 
-            {/* Input 3: Confirm New Password */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-gray-300">
                 Confirm New Password
@@ -159,7 +151,6 @@ export function SettingsSection1({ loading = false }: SettingsSection1Props) {
               </div>
             </div>
 
-            {/* Submit Button */}
             <div className="pt-2 flex justify-end">
               <button
                 type="submit"

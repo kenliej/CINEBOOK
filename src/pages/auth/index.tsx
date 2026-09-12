@@ -11,7 +11,6 @@ export default function AuthPage() {
   const navigate = useNavigate();
   const [isRegister, setIsRegister] = useState(false);
 
-  // Form state
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -75,14 +74,11 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen w-full bg-[#0b0e14] text-white flex items-center justify-center p-4 relative overflow-hidden py-[60px]">
       
-      {/* Background Decorative Blur Orbs */}
       <div className="absolute -top-32 -left-32 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-red-900/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Auth Card Box */}
       <div className="w-full max-w-2xl bg-[#12171f] border border-[#1f2633] rounded-3xl p-6 sm:p-10 shadow-2xl relative z-10 transition-all duration-300">
         
-        {/* Logo & Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center p-3 bg-red-600/10 border border-red-600/20 rounded-2xl mb-3 text-red-500">
             <Film className="w-8 h-8" />
@@ -97,19 +93,15 @@ export default function AuthPage() {
           </p>
         </div>
 
-        {/* Auth Form with 60px Top Padding */}
         <form onSubmit={handleSubmit} className="pt-[60px] space-y-4">
           
-          {/* Animated Wrapper Keyed to Mode Switch */}
           <div 
             key={isRegister ? "register" : "login"}
             className="space-y-4 transition-all duration-500 ease-in-out animate-in fade-in slide-in-from-bottom-3"
           >
-            {/* REGISTER EXTRA FIELDS */}
             {isRegister && (
               <div className="space-y-5">
                 
-                {/* Name Fields Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <label className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">
@@ -144,7 +136,6 @@ export default function AuthPage() {
                   </div>
                 </div>
 
-                {/* Birthday & Gender Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <label className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">
@@ -180,7 +171,6 @@ export default function AuthPage() {
                   </div>
                 </div>
 
-                {/* Phone Number */}
                 <div className="space-y-1">
                   <label className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">
                     <Phone className="w-3.5 h-3.5 text-red-500" />
@@ -197,7 +187,6 @@ export default function AuthPage() {
                   />
                 </div>
 
-                {/* Address */}
                 <div className="space-y-1">
                   <label className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5 text-red-500" />
@@ -217,7 +206,6 @@ export default function AuthPage() {
               </div>
             )}
 
-            {/* COMMON FIELDS (Email & Password) */}
             <div className="space-y-4">
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">
@@ -252,7 +240,6 @@ export default function AuthPage() {
               </div>
             </div>
 
-            {/* Submit Button */}
             <div className="pt-2">
               <Button
                 type="submit"
@@ -267,7 +254,6 @@ export default function AuthPage() {
 
         </form>
 
-        {/* Form Toggle Switcher */}
         <div className="mt-6 pt-6 border-t border-gray-800 text-center text-xs text-gray-400">
           {isRegister ? (
             <p>

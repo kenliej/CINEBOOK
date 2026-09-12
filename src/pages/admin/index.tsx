@@ -128,7 +128,6 @@ export default function AdminPanel() {
   return (
     <div className="min-h-screen bg-[#0b0e14] text-white space-y-12 pb-16">
       
-      {/* HERO SECTION */}
       <section 
         ref={sectionRef} 
         className="relative w-full h-[280px] md:h-[320px] flex items-center overflow-hidden bg-black text-white"
@@ -149,7 +148,6 @@ export default function AdminPanel() {
           }
         `}</style>
 
-        {/* Background Image with Dark Overlay */}
         <div className="absolute inset-0 z-0">
           <img
             src={wallpaper1}
@@ -159,11 +157,9 @@ export default function AdminPanel() {
           <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
         </div>
 
-        {/* Content Container */}
         <div className="relative z-10 container mx-auto px-6 md:px-12 flex items-center justify-between">
           <div className="max-w-xl space-y-2">
             
-            {/* Animated Heading with Admin Icon */}
             <div 
               className={`flex items-center gap-3 opacity-0 ${
                 isVisible ? "animate-up" : ""
@@ -176,7 +172,6 @@ export default function AdminPanel() {
               </h1>
             </div>
 
-            {/* Animated Tagline */}
             <p 
               className={`text-sm md:text-base text-gray-300 font-normal leading-relaxed opacity-0 ${
                 isVisible ? "animate-up" : ""
@@ -189,7 +184,6 @@ export default function AdminPanel() {
 
           </div>
 
-          {/* Logout Button using variant="primary" */}
           <div 
             className={`opacity-0 ${isVisible ? "animate-up" : ""}`}
             style={{ animationDelay: "400ms" }}
@@ -207,11 +201,9 @@ export default function AdminPanel() {
         </div>
       </section>
 
-      {/* SECTION 1: ADD A MOVIE FORM */}
       <section className="container mx-auto px-6 md:px-12">
         <div className="max-w-4xl mx-auto bg-[#12171f] border border-[#1f2633] rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
           
-          {/* Header */}
           <div className="flex items-center gap-3 border-b border-[#1f2633] pb-6 mb-8">
             <div className="p-3 bg-red-600/10 border border-red-600/20 rounded-2xl text-red-500">
               <PlusCircle className="w-6 h-6" />
@@ -224,7 +216,6 @@ export default function AdminPanel() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             
-            {/* Title & Genre */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
@@ -259,7 +250,6 @@ export default function AdminPanel() {
               </div>
             </div>
 
-            {/* Duration, Available Seats & Ticket Price */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
@@ -310,7 +300,6 @@ export default function AdminPanel() {
               </div>
             </div>
 
-            {/* Showtime & Location */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
@@ -344,7 +333,6 @@ export default function AdminPanel() {
               </div>
             </div>
 
-            {/* Poster URL / Upload */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
                 <ImageIcon className="w-3.5 h-3.5 text-red-500" />
@@ -371,7 +359,6 @@ export default function AdminPanel() {
               </div>
             </div>
 
-            {/* Synopsis */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
                 <FileText className="w-3.5 h-3.5 text-red-500" />
@@ -388,7 +375,6 @@ export default function AdminPanel() {
               />
             </div>
 
-            {/* Submit Button */}
             <div className="pt-4 flex justify-end">
               <Button
                 type="submit"

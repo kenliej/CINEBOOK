@@ -60,7 +60,6 @@ export function ProfileHeroSection({ profile, loading = false, onSave }: Profile
           }
         `}</style>
 
-        {/* Background Image with Dark Gradient Overlay */}
         <div className="absolute inset-0 z-0">
           <img
             src={wallpaper1}
@@ -70,7 +69,6 @@ export function ProfileHeroSection({ profile, loading = false, onSave }: Profile
           <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
         </div>
 
-        {/* Hero Content */}
         <div className="relative z-10 container mx-auto px-6 md:px-12 flex items-center">
           <div 
             className={`flex flex-col md:flex-row items-center md:items-end gap-6 w-full justify-between opacity-0 ${
@@ -79,9 +77,7 @@ export function ProfileHeroSection({ profile, loading = false, onSave }: Profile
             style={{ animationDelay: "100ms" }}
           >
             
-            {/* Avatar & User Details */}
             <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
-              {/* Avatar Container */}
               <div className="relative group">
                 <div className="w-24 h-24 md:w-28 md:h-28 rounded-full bg-[#12171f] border-2 border-red-600 p-1 flex items-center justify-center overflow-hidden shadow-xl shadow-red-600/20">
                   <img
@@ -100,7 +96,6 @@ export function ProfileHeroSection({ profile, loading = false, onSave }: Profile
                 </button>
               </div>
 
-              {/* User Title & Badge */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-center md:justify-start gap-2">
                   <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight">
@@ -117,7 +112,6 @@ export function ProfileHeroSection({ profile, loading = false, onSave }: Profile
               </div>
             </div>
 
-            {/* Action Button */}
             <button 
               type="button"
               onClick={() => setIsEditModalOpen(true)}
@@ -131,7 +125,6 @@ export function ProfileHeroSection({ profile, loading = false, onSave }: Profile
         </div>
       </section>
 
-      {/* Popup Edit Profile Component */}
       <EditProfileModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}

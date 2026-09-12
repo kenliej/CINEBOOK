@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Settings, LogOut } from "lucide-react";
-import wallpaper1 from "@/assets/wallpaper1.webp"; // Adjust path if needed
+import wallpaper1 from "@/assets/wallpaper1.webp";
 
 export function SettingsHeroSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -25,7 +25,6 @@ export function SettingsHeroSection() {
   }, []);
 
   const handleLogout = () => {
-    // Handle logout logic here
   };
 
   return (
@@ -49,7 +48,6 @@ export function SettingsHeroSection() {
         }
       `}</style>
 
-      {/* Background Image with Dark Overlay */}
       <div className="absolute inset-0 z-0">
         <img
           src={wallpaper1}
@@ -59,7 +57,6 @@ export function SettingsHeroSection() {
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
       </div>
 
-      {/* Content Container */}
       <div className="relative z-10 container mx-auto px-6 md:px-12 flex items-center">
         <div 
           className={`flex flex-col md:flex-row items-start md:items-end justify-between gap-6 w-full opacity-0 ${
@@ -68,7 +65,6 @@ export function SettingsHeroSection() {
           style={{ animationDelay: "100ms" }}
         >
           
-          {/* Header & Description */}
           <div className="max-w-xl space-y-2">
             <div className="flex items-center gap-3">
               <Settings className="w-10 h-10 md:w-12 md:h-12 text-red-600 shrink-0" />
@@ -81,7 +77,6 @@ export function SettingsHeroSection() {
             </p>
           </div>
 
-          {/* Log Out Button in Hero */}
           <button
             onClick={handleLogout}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-sm transition-all duration-300 shadow-lg shadow-red-600/30 hover:shadow-red-600/50 active:scale-95 shrink-0"

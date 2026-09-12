@@ -93,7 +93,6 @@ export function EditProfileModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
       <div className="bg-[#12171f] border border-[#1f2633] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto text-white shadow-2xl flex flex-col">
         
-        {/* Modal Header */}
         <div className="sticky top-0 bg-[#12171f]/95 backdrop-blur-md border-b border-gray-800 p-5 flex items-center justify-between z-10">
           <h2 className="text-lg font-bold">Edit Profile</h2>
           <button
@@ -104,10 +103,8 @@ export function EditProfileModal({
           </button>
         </div>
 
-        {/* Modal Body / Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           
-          {/* Profile Picture Upload */}
           <div className="flex flex-col items-center justify-center gap-3">
             <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-red-600/50 bg-[#18202c] flex items-center justify-center group">
               {avatarPreview ? (
@@ -147,10 +144,8 @@ export function EditProfileModal({
             </div>
           </div>
 
-          {/* Form Fields Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             
-            {/* First Name */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">
                 <User className="w-3.5 h-3.5 text-red-500" />
@@ -165,7 +160,6 @@ export function EditProfileModal({
               />
             </div>
 
-            {/* Middle Name */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">
                 <User className="w-3.5 h-3.5 text-red-500" />
@@ -180,7 +174,6 @@ export function EditProfileModal({
               />
             </div>
 
-            {/* Last Name */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">
                 <User className="w-3.5 h-3.5 text-red-500" />
@@ -195,7 +188,6 @@ export function EditProfileModal({
               />
             </div>
 
-            {/* Age */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">
                 <Hash className="w-3.5 h-3.5 text-red-500" />
@@ -210,7 +202,6 @@ export function EditProfileModal({
               />
             </div>
 
-            {/* Birthday */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-red-500" />
@@ -225,7 +216,6 @@ export function EditProfileModal({
               />
             </div>
 
-            {/* Gender */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">
                 <Users className="w-3.5 h-3.5 text-red-500" />
@@ -244,7 +234,6 @@ export function EditProfileModal({
               </select>
             </div>
 
-            {/* Phone Number (Spans full width) */}
             <div className="space-y-1.5 md:col-span-3">
               <label className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">
                 <Phone className="w-3.5 h-3.5 text-red-500" />
@@ -262,7 +251,6 @@ export function EditProfileModal({
               />
             </div>
 
-            {/* Email Address (Spans full width) */}
             <div className="space-y-1.5 md:col-span-3">
               <label className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">
                 <Mail className="w-3.5 h-3.5 text-red-500" />
@@ -277,7 +265,6 @@ export function EditProfileModal({
               />
             </div>
 
-            {/* Address (Spans full width) */}
             <div className="space-y-1.5 md:col-span-3">
               <label className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 text-red-500" />
@@ -294,7 +281,6 @@ export function EditProfileModal({
 
           </div>
 
-          {/* Action Buttons */}
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-800">
             <Button
               type="button"

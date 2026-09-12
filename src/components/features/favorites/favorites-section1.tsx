@@ -98,7 +98,6 @@ export function FavoritesSection1({ favorites: savedFavorites = [], loading = fa
       `}</style>
 
       <div className="container mx-auto">
-        {/* Responsive Grid Layout */}
         {loading ? (
           <div className="py-20 text-center text-gray-400">Loading favorites...</div>
         ) : favorites.length > 0 ? (
@@ -123,23 +122,19 @@ export function FavoritesSection1({ favorites: savedFavorites = [], loading = fa
                   location={movie.location}
                   onRemove={() => handleRemove(String(movie.id ?? movie.movie_id ?? ""))}
                   onViewDetails={() => {
-                    // Navigate to details page
                   }}
                 />
               </div>
             ))}
           </div>
         ) : (
-          /* Empty Favorites Fallback */
           <div className="py-20 text-center space-y-3">
             <p className="text-lg text-gray-400">No favorite movies saved yet.</p>
           </div>
         )}
 
-        {/* Pagination Bar */}
         {favorites.length > ITEMS_PER_PAGE && (
           <div className="flex items-center justify-center gap-3 mt-12 text-sm">
-            {/* Previous Button */}
             <button
               onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
               disabled={currentPage === 1}
@@ -149,7 +144,6 @@ export function FavoritesSection1({ favorites: savedFavorites = [], loading = fa
               <ChevronLeft className="w-4 h-4" />
             </button>
 
-            {/* Page Numbers */}
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
@@ -164,7 +158,6 @@ export function FavoritesSection1({ favorites: savedFavorites = [], loading = fa
               </button>
             ))}
 
-            {/* Next Button */}
             <button
               onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
               disabled={currentPage === totalPages}
