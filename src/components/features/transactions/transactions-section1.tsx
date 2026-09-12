@@ -19,6 +19,12 @@ type Transaction = TransactionCardItemProps & {
   status: string;
 };
 
+interface TransactionsSection1Props {
+  transactions?: Transaction[];
+  loading?: boolean;
+  onRefresh?: () => void;
+}
+
 const MOCK_TRANSACTIONS: Transaction[] = [
   {
     id: "1",
@@ -92,15 +98,15 @@ const MOCK_TRANSACTIONS: Transaction[] = [
   },
 ];
 
-const TABS = ["All", "Upcoming", "Completed", "Cancelled"] as const;
+const TABS = ["All", "Pending", "Completed", "Cancelled"] as const;
 type TabType = (typeof TABS)[number];
 
-export function TransactionsSection1() {
+export function TransactionsSection1({ transactions = MOCK_TRANSACTIONS, loading = false, onRefresh }: TransactionsSection1Props & { onRefresh?: () => void }) {
   const [activeTab, setActiveTab] = useState<TabType>("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedTicket, setSelectedTicket] = useState<Transaction | null>(null);
-  const totalPages = 3;
+  const ITEMS_PER_PAGE = 9;
 
   const sectionRef = useRef<HTMLElement | null>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -123,9 +129,13 @@ export function TransactionsSection1() {
     return () => observer.disconnect();
   }, []);
 
-  const filteredTransactions = MOCK_TRANSACTIONS.filter((item) => {
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab, searchQuery]);
+
+  const filteredTransactions = transactions.filter((item) => {
     let matchesTab = true;
-    if (activeTab === "Upcoming") matchesTab = item.status === "Pending";
+    if (activeTab === "Pending") matchesTab = item.status === "Pending";
     else if (activeTab === "Completed") matchesTab = item.status === "Completed";
     else if (activeTab === "Cancelled") matchesTab = item.status === "Cancelled";
 
@@ -136,6 +146,12 @@ export function TransactionsSection1() {
 
     return matchesTab && matchesSearch;
   });
+
+  const totalPages = Math.max(1, Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE));
+  const paginatedTransactions = filteredTransactions.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE,
+  );
 
   return (
     <section
@@ -193,9 +209,11 @@ export function TransactionsSection1() {
         </div>
 
         {/* Transactions List */}
-        {filteredTransactions.length > 0 ? (
+        {loading ? (
+          <div className="py-20 text-center text-gray-400">Loading transactions...</div>
+        ) : filteredTransactions.length > 0 ? (
           <div className="flex flex-col gap-4">
-            {filteredTransactions.map((tx, index) => (
+            {paginatedTransactions.map((tx, index) => (
               <div
                 key={tx.id}
                 onClick={() => setSelectedTicket(tx)}
@@ -215,7 +233,7 @@ export function TransactionsSection1() {
         )}
 
         {/* Pagination Controls */}
-        {filteredTransactions.length > 0 && (
+        {filteredTransactions.length > ITEMS_PER_PAGE && (
           <div className="flex items-center justify-center gap-3 pt-6 text-sm">
             <button
               onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
@@ -255,7 +273,7 @@ export function TransactionsSection1() {
       {/* Ticket Details Popup Modal */}
       {selectedTicket && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm transition-all"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-[2px] transition-all"
           onClick={() => setSelectedTicket(null)}
         >
           <div
@@ -338,6 +356,8 @@ export function TransactionsSection1() {
                 className={`px-3 py-1 rounded-full text-xs font-semibold ${
                   selectedTicket.status === "Completed"
                     ? "bg-green-500/10 text-green-400 border border-green-500/20"
+                    : selectedTicket.status === "Cancelled"
+                    ? "bg-red-500/10 text-red-400 border border-red-500/20"
                     : "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20"
                 }`}
               >
@@ -345,13 +365,73 @@ export function TransactionsSection1() {
               </span>
             </div>
 
-            {/* Close Button */}
-            <button
-              onClick={() => setSelectedTicket(null)}
-              className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 rounded-xl text-xs transition"
-            >
-              Close Ticket
-            </button>
+            <div className="flex gap-3">
+              {selectedTicket.status === "Pending" && (
+                <>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        const response = await fetch(`http://localhost:8000/api/reservations/${selectedTicket.id}/complete`, {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                            Accept: "application/json",
+                          },
+                          body: JSON.stringify({
+                            payment_method: "GCash",
+                            seats: selectedTicket.seats.length > 0
+                              ? selectedTicket.seats
+                              : Array.from({ length: Math.max(1, Math.ceil((selectedTicket.amount || 0) / 350)) }, (_, idx) => {
+                                  const row = String.fromCharCode(65 + (idx % 8));
+                                  return `${row}${idx + 1}`;
+                                }),
+                          }),
+                        });
+
+                        if (response.ok) {
+                          onRefresh?.();
+                          setSelectedTicket(null);
+                          return;
+                        }
+                      } catch {}
+                      setSelectedTicket(null);
+                    }}
+                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl text-xs transition"
+                  >
+                    Continue Payment
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        const response = await fetch(`http://localhost:8000/api/reservations/${selectedTicket.id}/cancel`, {
+                          method: "POST",
+                          headers: { Accept: "application/json" },
+                        });
+
+                        if (response.ok) {
+                          onRefresh?.();
+                          setSelectedTicket(null);
+                          return;
+                        }
+                      } catch {}
+                      setSelectedTicket(null);
+                    }}
+                    className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-xl text-xs transition"
+                  >
+                    Cancel Reservation
+                  </button>
+                </>
+              )}
+              <button
+                onClick={() => setSelectedTicket(null)}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 rounded-xl text-xs transition"
+              >
+                Close Ticket
+              </button>
+            </div>
           </div>
         </div>
       )}

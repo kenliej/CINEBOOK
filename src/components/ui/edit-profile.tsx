@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { X, Camera, User, Mail, Phone, Calendar, MapPin, Hash, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -25,26 +25,40 @@ export function EditProfileModal({
   onClose,
   initialData = {
     avatarUrl: "",
-    firstName: "Dudes",
-    middleName: "Aro",
-    lastName: "Inihao",
-    age: "22",
-    birthday: "2004-07-26",
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    age: "",
+    birthday: "",
     gender: "Male",
-    phone: "+63 912 345 6789",
-    email: "dudes.inihao@example.com",
-    address: "Cordova, Cebu, Philippines",
+    phone: "",
+    email: "",
+    address: "",
   },
   onSave,
 }: EditProfileProps) {
   const [formData, setFormData] = useState(initialData);
   const [avatarPreview, setAvatarPreview] = useState(initialData.avatarUrl || "");
 
+  React.useEffect(() => {
+    setFormData(initialData);
+    setAvatarPreview(initialData.avatarUrl || "");
+  }, [initialData]);
+
   if (!isOpen) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const normalizePhone = (value: string) => {
+    const digits = value.replace(/\D/g, "");
+    if (!digits) return "";
+    if (digits.startsWith("0")) {
+      return digits.slice(0, 11);
+    }
+    return digits.slice(0, 11);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,7 +72,20 @@ export function EditProfileModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (onSave) onSave(formData);
+
+    const phone = normalizePhone(formData.phone);
+    if (!/^09\d{9}$/.test(phone)) {
+      alert("Phone number must start with 09 and contain exactly 11 digits.");
+      return;
+    }
+
+    const payload = {
+      ...formData,
+      phone,
+      avatarUrl: formData.avatarUrl || avatarPreview || "",
+    };
+
+    if (onSave) onSave(payload);
     onClose();
   };
 
@@ -104,6 +131,20 @@ export function EditProfileModal({
               </label>
             </div>
             <span className="text-xs text-gray-400">Click avatar to change picture</span>
+            <div className="w-full space-y-1.5">
+              <label className="text-xs font-semibold text-gray-400">Profile image link</label>
+              <input
+                type="url"
+                name="avatarUrl"
+                value={formData.avatarUrl || ""}
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, avatarUrl: e.target.value }));
+                  setAvatarPreview(e.target.value || "");
+                }}
+                placeholder="https://..."
+                className="w-full bg-[#18202c] border border-[#232d3f] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-red-600 transition-colors"
+              />
+            </div>
           </div>
 
           {/* Form Fields Grid */}
@@ -213,7 +254,10 @@ export function EditProfileModal({
                 type="text"
                 name="phone"
                 value={formData.phone}
-                onChange={handleChange}
+                onChange={(e) => setFormData((prev) => ({ ...prev, phone: normalizePhone(e.target.value) }))}
+                inputMode="numeric"
+                maxLength={11}
+                placeholder="09123456789"
                 className="w-full bg-[#18202c] border border-[#232d3f] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-red-600 transition-colors"
               />
             </div>

@@ -1,9 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { Edit3, ShieldCheck } from "lucide-react";
-import wallpaper1 from "@/assets/wallpaper1.webp"; // Adjust path if needed
-import { EditProfileModal } from "@/components/ui/edit-profile.tsx"; // Adjust path if needed
+import wallpaper1 from "@/assets/wallpaper1.webp";
+import { EditProfileModal } from "@/components/ui/edit-profile.tsx";
 
-export function ProfileHeroSection() {
+interface ProfileHeroSectionProps {
+  profile?: any;
+  loading?: boolean;
+  onSave?: (data: any) => void;
+}
+
+export function ProfileHeroSection({ profile, loading = false, onSave }: ProfileHeroSectionProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -25,6 +31,12 @@ export function ProfileHeroSection() {
 
     return () => observer.disconnect();
   }, []);
+
+  const fullName = profile
+    ? [profile.first_name, profile.middle_name, profile.last_name].filter(Boolean).join(" ").trim() || "Cinebook User"
+    : "Cinebook User";
+
+  const avatarUrl = profile?.avatar_url || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop";
 
   return (
     <>
@@ -73,7 +85,7 @@ export function ProfileHeroSection() {
               <div className="relative group">
                 <div className="w-24 h-24 md:w-28 md:h-28 rounded-full bg-[#12171f] border-2 border-red-600 p-1 flex items-center justify-center overflow-hidden shadow-xl shadow-red-600/20">
                   <img
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop"
+                    src={avatarUrl}
                     alt="Profile Avatar"
                     className="w-full h-full rounded-full object-cover"
                   />
@@ -92,7 +104,7 @@ export function ProfileHeroSection() {
               <div className="space-y-1.5">
                 <div className="flex items-center justify-center md:justify-start gap-2">
                   <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight">
-                    Dudes Aro Inihao
+                    {loading ? "Loading profile..." : fullName}
                   </h1>
                   <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-600/20 text-emerald-400 border border-emerald-600/30">
                     <ShieldCheck className="w-3 h-3" />
@@ -123,8 +135,21 @@ export function ProfileHeroSection() {
       <EditProfileModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
+        initialData={{
+          avatarUrl: profile?.avatar_url || "",
+          firstName: profile?.first_name || "",
+          middleName: profile?.middle_name || "",
+          lastName: profile?.last_name || "",
+          age: String(profile?.age || ""),
+          birthday: profile?.birthday || "",
+          gender: profile?.gender || "Male",
+          phone: profile?.phone || "",
+          email: profile?.email || "",
+          address: profile?.address || "",
+        }}
         onSave={(updatedData) => {
-          console.log("Updated user profile:", updatedData);
+          onSave?.(updatedData)
+          setIsEditModalOpen(false)
         }}
       />
     </>

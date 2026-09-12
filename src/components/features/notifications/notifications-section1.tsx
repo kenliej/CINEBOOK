@@ -93,14 +93,23 @@ const SIDEBAR_CATEGORIES = [
 
 type CategoryLabel = (typeof SIDEBAR_CATEGORIES)[number]["label"];
 
-export function NotificationsSection1() {
-  const [notifications, setNotifications] = useState<NotificationItem[]>(INITIAL_NOTIFICATIONS);
+interface NotificationsSection1Props {
+  notifications?: NotificationItem[];
+  loading?: boolean;
+}
+
+export function NotificationsSection1({ notifications: apiNotifications = INITIAL_NOTIFICATIONS, loading = false }: NotificationsSection1Props) {
+  const [notifications, setNotifications] = useState<NotificationItem[]>(apiNotifications);
   const [activeCategory, setActiveCategory] = useState<CategoryLabel>("All Notifications");
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 2;
 
   const sectionRef = useRef<HTMLElement | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setNotifications(apiNotifications)
+  }, [apiNotifications])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -222,7 +231,9 @@ export function NotificationsSection1() {
           </div>
 
           {/* Notifications List */}
-          {filteredNotifications.length > 0 ? (
+          {loading ? (
+            <div className="py-20 text-center text-gray-400">Loading notifications...</div>
+          ) : filteredNotifications.length > 0 ? (
             <div className="flex flex-col gap-4">
               {filteredNotifications.map((notif, index) => (
                 <div

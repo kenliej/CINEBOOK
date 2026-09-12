@@ -2,17 +2,17 @@ import { Calendar, MapPin, Film, Ticket, Armchair, CreditCard, ChevronRight } fr
 
 export interface TransactionCardProps {
   id: string;
-  image: string;
-  title: string;
-  date: string;
-  time: string;
-  location: string;
-  genres: string[];
-  refCode: string;
-  seats: string[];
-  paymentMethod: string;
-  amount: number;
-  status: "Completed" | "Pending" | "Cancelled";
+  image?: string;
+  title?: string;
+  date?: string;
+  time?: string;
+  location?: string;
+  genres?: string[];
+  refCode?: string;
+  seats?: string[];
+  paymentMethod?: string;
+  amount?: number;
+  status?: "Completed" | "Pending" | "Cancelled" | string;
   onCardClick?: () => void;
 }
 
@@ -30,6 +30,14 @@ export function TransactionCard({
   status,
   onCardClick,
 }: TransactionCardProps) {
+  const safeTitle = title || "Movie Reservation";
+  const safeImage = image || "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=500&auto=format&fit=crop";
+  const safeGenres = genres && genres.length > 0 ? genres : ["Movie"];
+  const safeRefCode = refCode || "Pending";
+  const safeSeats = seats && seats.length > 0 ? seats : ["TBA"];
+  const safePaymentMethod = paymentMethod || "GCash";
+  const safeStatus = (status as string) || "Pending";
+
   // Dynamic status badge styling
   const getStatusStyles = (status: TransactionCardProps["status"]) => {
     switch (status) {
@@ -53,31 +61,31 @@ export function TransactionCard({
       <div className="flex gap-4 flex-1 min-w-0">
         <div className="relative w-20 h-28 sm:w-24 sm:h-32 rounded-xl overflow-hidden shrink-0 bg-black/40">
           <img
-            src={image}
-            alt={title}
+            src={safeImage}
+            alt={safeTitle}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         </div>
 
         <div className="flex flex-col justify-between py-1 min-w-0">
           <h3 className="text-base sm:text-lg font-bold text-white truncate leading-tight">
-            {title}
+            {safeTitle}
           </h3>
 
           <div className="space-y-1 text-xs text-gray-400">
             <div className="flex items-center gap-2">
               <Calendar className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-              <span>{date} &nbsp;{time}</span>
+              <span>{date || "TBD"} &nbsp;{time || ""}</span>
             </div>
 
             <div className="flex items-center gap-2">
               <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-              <span className="truncate">{location}</span>
+              <span className="truncate">{location || "N/A"}</span>
             </div>
 
             <div className="flex items-center gap-2 pt-1">
               <Film className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-              <span className="truncate">{genres.join(" • ")}</span>
+              <span className="truncate">{safeGenres.join(" • ")}</span>
             </div>
           </div>
         </div>
@@ -93,7 +101,7 @@ export function TransactionCard({
           <Ticket className="w-4 h-4 text-gray-400 shrink-0 mt-0.5" />
           <div>
             <p className="text-[11px] text-gray-500 font-medium">Ref Code</p>
-            <p className="text-white font-semibold tracking-wide">{refCode}</p>
+            <p className="text-white font-semibold tracking-wide">{safeRefCode}</p>
           </div>
         </div>
 
@@ -102,7 +110,7 @@ export function TransactionCard({
           <Armchair className="w-4 h-4 text-gray-400 shrink-0 mt-0.5" />
           <div>
             <p className="text-[11px] text-gray-500 font-medium">Seats</p>
-            <p className="text-white font-semibold">{seats.join(", ")}</p>
+            <p className="text-white font-semibold">{safeSeats.join(", ")}</p>
           </div>
         </div>
 
@@ -111,7 +119,7 @@ export function TransactionCard({
           <CreditCard className="w-4 h-4 text-gray-400 shrink-0 mt-0.5" />
           <div>
             <p className="text-[11px] text-gray-500 font-medium">Payment Method</p>
-            <p className="text-white font-semibold">{paymentMethod}</p>
+            <p className="text-white font-semibold">{safePaymentMethod}</p>
           </div>
         </div>
       </div>
@@ -129,10 +137,10 @@ export function TransactionCard({
               status
             )}`}
           >
-            {status}
+            {safeStatus}
           </span>
           <p className="text-lg font-extrabold text-white">
-            ₱ {amount.toLocaleString("en-PH", { minimumFractionDigits: 2 })}
+            ₱ {(Number(amount ?? 0)).toLocaleString("en-PH", { minimumFractionDigits: 2 })}
           </p>
         </div>
 

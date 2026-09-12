@@ -1,30 +1,43 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { ArrowLeft, Calendar, MapPin, Ticket, Film, Clock, Star } from "lucide-react";
 import wallpaper1 from "@/assets/wallpaper1.webp";
 import ReservePopup from "@/components/ui/reserve-popup";
-
-const MOCK_MOVIES: Record<string, any> = {
-  "1": {
-    title: "Inception",
-    genre: "Sci-Fi / Action",
-    rating: "4.8",
-    duration: "2h 28m",
-    location: "Cinema 1 - SM Seaside Cebu",
-    showtime: "7:30 PM • Sept 15, 2026",
-    availableSeats: 42,
-    price: 350,
-    description: "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O., but his tragic past may doom the project and his team to disaster.",
-    poster: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800&auto=format&fit=crop"
-  }
-};
+import { useAuthGuard } from "@/lib/auth";
 
 export default function MovieDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const movie = (id && MOCK_MOVIES[id]) || MOCK_MOVIES["1"];
-
+  const { requireAuth } = useAuthGuard();
+  const [movie, setMovie] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchMovie = async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/api/movie/${id ?? 1}`);
+        if (!response.ok) throw new Error("Movie not found");
+        const result = await response.json();
+        setMovie(result.data ?? null);
+      } catch (error) {
+        console.error("Movie API error:", error);
+        setMovie(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovie();
+  }, [id]);
+
+  if (loading) {
+    return <div className="min-h-screen bg-[#0b0e13] text-white flex items-center justify-center">Loading movie details...</div>;
+  }
+
+  if (!movie) {
+    return <div className="min-h-screen bg-[#0b0e13] text-white flex items-center justify-center">Movie not found.</div>;
+  }
 
   return (
     <div className="min-h-screen bg-[#0b0e13] text-white flex flex-col">
@@ -52,7 +65,7 @@ export default function MovieDetails() {
 
             <div className="bg-[#12171f] p-3 rounded-2xl border border-[#1f2633] shadow-2xl shadow-black/80">
               <div className="relative rounded-xl overflow-hidden aspect-[2/3]">
-                <img src={movie.poster} alt={movie.title} className="w-full h-full object-cover" />
+                <img src={movie.image} alt={movie.title} className="w-full h-full object-cover" />
                 <span className="absolute top-3 right-3 flex items-center gap-1 bg-black/70 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-amber-400 border border-amber-400/30">
                   <Star className="w-3.5 h-3.5 fill-amber-400" />
                   {movie.rating}
@@ -65,7 +78,7 @@ export default function MovieDetails() {
           <div className="md:col-span-2 space-y-6 pt-0 md:pt-10">
             <div className="space-y-2">
               <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-600/20 text-red-500 border border-red-600/30">
-                {movie.genre}
+                {movie.genres?.join(' / ') ?? movie.genre}
               </span>
               <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white mt-2">
                 {movie.title}
@@ -117,7 +130,12 @@ export default function MovieDetails() {
                 </span>
               </div>
               <button
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => {
+                  if (!requireAuth()) {
+                    return;
+                  }
+                  setIsModalOpen(true);
+                }}
                 className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm transition-all duration-300 shadow-lg shadow-red-600/30 hover:shadow-red-600/50 active:scale-95 flex items-center justify-center gap-2"
               >
                 <Ticket className="w-4 h-4" />

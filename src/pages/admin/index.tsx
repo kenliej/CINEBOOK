@@ -1,22 +1,24 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router";
 import { ShieldCheck, LogOut, PlusCircle, Film, Clock, Users, Calendar, MapPin, FileText, Tag, Banknote, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import wallpaper1 from "@/assets/wallpaper1.webp"; // Adjust path if needed
+import { clearAuthSession } from "@/lib/auth";
+import wallpaper1 from "@/assets/wallpaper1.webp";
 
 export default function AdminPanel() {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(false);
 
-  // Form State initialized with your sample data
   const [movieData, setMovieData] = useState({
-    title: "Inception",
-    genre: "Sci-Fi / Action",
-    duration: "2h 28m",
-    availableSeats: "42",
-    showtime: "2026-09-15T19:30",
-    location: "Cinema 1 - SM Seaside Cebu",
-    synopsis: "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O., but his tragic past may doom the project and his team to disaster.",
-    ticketPrice: "350",
+    title: "",
+    genre: "",
+    duration: "",
+    availableSeats: "",
+    showtime: "",
+    location: "",
+    synopsis: "",
+    ticketPrice: "",
     posterUrl: "",
   });
 
@@ -45,14 +47,82 @@ export default function AdminPanel() {
     setMovieData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("New movie submitted:", movieData);
-    alert("Movie added successfully!");
+
+    try {
+      const response = await fetch("http://localhost:8000/api/admin/movies", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          ...movieData,
+          availableSeats: Number(movieData.availableSeats),
+          ticketPrice: Number(movieData.ticketPrice),
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to add movie");
+      }
+
+      setMovieData({
+        title: "",
+        genre: "",
+        duration: "",
+        availableSeats: "",
+        showtime: "",
+        location: "",
+        synopsis: "",
+        ticketPrice: "",
+        posterUrl: "",
+      });
+
+      alert("Movie added successfully!");
+    } catch (error) {
+      console.error("Admin API error:", error);
+      alert(error instanceof Error ? error.message : "Failed to add movie");
+    }
+  };
+
+  const handlePosterUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const response = await fetch("http://localhost:8000/api/admin/movies/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to upload image");
+      }
+
+      setMovieData((prev) => ({
+        ...prev,
+        posterUrl: result.data?.image_url || "",
+      }));
+
+      alert("Poster uploaded successfully.");
+    } catch (error) {
+      console.error("Poster upload error:", error);
+      alert(error instanceof Error ? error.message : "Failed to upload image");
+    } finally {
+      event.target.value = "";
+    }
   };
 
   const handleLogout = () => {
-    console.log("Admin logged out");
+    clearAuthSession();
+    navigate("/auth", { replace: true });
   };
 
   return (
@@ -274,20 +344,31 @@ export default function AdminPanel() {
               </div>
             </div>
 
-            {/* Poster URL */}
+            {/* Poster URL / Upload */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
                 <ImageIcon className="w-3.5 h-3.5 text-red-500" />
-                Poster Image URL
+                Poster Image URL or Upload
               </label>
-              <input
-                type="url"
-                name="posterUrl"
-                value={movieData.posterUrl}
-                onChange={handleChange}
-                placeholder="https://image-link.com/poster.jpg"
-                className="w-full bg-[#18202c] border border-[#232d3f] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-600 transition-colors"
-              />
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <input
+                  type="url"
+                  name="posterUrl"
+                  value={movieData.posterUrl}
+                  onChange={handleChange}
+                  placeholder="https://image-link.com/poster.jpg"
+                  className="w-full bg-[#18202c] border border-[#232d3f] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-600 transition-colors"
+                />
+                <label className="inline-flex items-center justify-center rounded-xl border border-dashed border-red-600/40 bg-red-600/5 px-4 py-3 text-xs font-semibold text-red-200 cursor-pointer hover:bg-red-600/10">
+                  Upload
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handlePosterUpload}
+                  />
+                </label>
+              </div>
             </div>
 
             {/* Synopsis */}

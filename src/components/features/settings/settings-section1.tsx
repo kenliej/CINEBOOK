@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Eye, EyeOff, KeyRound } from "lucide-react";
 
-export function SettingsSection1() {
+interface SettingsSection1Props {
+  loading?: boolean;
+}
+
+export function SettingsSection1({ loading = false }: SettingsSection1Props) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -60,14 +64,15 @@ export function SettingsSection1() {
       `}</style>
 
       <div className="container mx-auto max-w-3xl">
-        
-        {/* CHANGE PASSWORD CARD */}
-        <div 
-          className={`bg-[#12171f] border border-[#1f2633] rounded-2xl p-6 md:p-8 space-y-6 opacity-0 ${
-            isVisible ? "animate-card-up" : ""
-          }`}
-          style={{ animationDelay: "100ms" }}
-        >
+        {loading ? (
+          <div className="py-12 text-center text-gray-400">Loading settings...</div>
+        ) : (
+          <div 
+            className={`bg-[#12171f] border border-[#1f2633] rounded-2xl p-6 md:p-8 space-y-6 opacity-0 ${
+              isVisible ? "animate-card-up" : ""
+            }`}
+            style={{ animationDelay: "100ms" }}
+          >
           {/* Card Header */}
           <div className="border-b border-gray-800/80 pb-4 flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-red-600/10 text-red-500 border border-red-600/20">
@@ -165,7 +170,8 @@ export function SettingsSection1() {
             </div>
 
           </form>
-        </div>
+          </div>
+        )}
 
       </div>
     </section>

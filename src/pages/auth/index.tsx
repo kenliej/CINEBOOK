@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { 
-  Film, Mail, Lock, User, Hash, Calendar, 
-  Users, Phone, MapPin, Camera, ArrowRight 
+import {
+  Film, Mail, Lock, User, Calendar,
+  Users, Phone, MapPin, ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { saveAuthSession } from "@/lib/auth";
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -12,11 +13,8 @@ export default function AuthPage() {
 
   // Form state
   const [formData, setFormData] = useState({
-    avatarUrl: "",
     firstName: "",
-    middleName: "",
     lastName: "",
-    age: "",
     birthday: "",
     gender: "Male",
     phone: "",
@@ -25,8 +23,6 @@ export default function AuthPage() {
     address: "",
   });
 
-  const [avatarPreview, setAvatarPreview] = useState<string>("");
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -34,24 +30,46 @@ export default function AuthPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setAvatarPreview(url);
-      setFormData((prev) => ({ ...prev, avatarUrl: url }));
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isRegister) {
-      console.log("Registering user:", formData);
-    } else {
-      console.log("Logging in user:", { email: formData.email, password: formData.password });
+
+    try {
+      const endpoint = isRegister ? "http://localhost:8000/api/auth/register" : "http://localhost:8000/api/auth/login";
+      const payload = isRegister
+        ? { ...formData }
+        : {
+            email: formData.email,
+            password: formData.password,
+          };
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Authentication failed");
+      }
+
+      saveAuthSession({
+        token: result.data?.token || "",
+        expiresAt: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        user: result.data?.user || {
+          id: formData.email,
+          email: formData.email,
+          name: formData.firstName || "Cinebook User",
+        },
+      });
+      navigate("/");
+    } catch (error) {
+      console.error("Auth API error:", error);
+      alert(error instanceof Error ? error.message : "Authentication failed");
     }
-    // Redirect to home
-    navigate("/");
   };
 
   return (
@@ -91,34 +109,8 @@ export default function AuthPage() {
             {isRegister && (
               <div className="space-y-5">
                 
-                {/* Profile Photo Upload */}
-                <div className="flex flex-col items-center justify-center gap-2">
-                  <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-red-600/50 bg-[#18202c] flex items-center justify-center group">
-                    {avatarPreview ? (
-                      <img
-                        src={avatarPreview}
-                        alt="Avatar Preview"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <User className="w-10 h-10 text-gray-500" />
-                    )}
-                    <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center cursor-pointer transition-opacity text-[11px] font-medium gap-1">
-                      <Camera className="w-4 h-4 text-white" />
-                      <span>Upload</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="hidden"
-                      />
-                    </label>
-                  </div>
-                  <span className="text-xs text-gray-400">Profile Picture</span>
-                </div>
-
                 {/* Name Fields Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <label className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">
                       <User className="w-3.5 h-3.5 text-red-500" />
@@ -130,21 +122,6 @@ export default function AuthPage() {
                       required
                       placeholder="John"
                       value={formData.firstName}
-                      onChange={handleChange}
-                      className="w-full bg-[#18202c] border border-[#232d3f] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-red-600 transition-colors"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5 text-red-500" />
-                      Middle Name
-                    </label>
-                    <input
-                      type="text"
-                      name="middleName"
-                      placeholder="Doe"
-                      value={formData.middleName}
                       onChange={handleChange}
                       className="w-full bg-[#18202c] border border-[#232d3f] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-red-600 transition-colors"
                     />
@@ -167,24 +144,8 @@ export default function AuthPage() {
                   </div>
                 </div>
 
-                {/* Age, Birthday & Gender Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">
-                      <Hash className="w-3.5 h-3.5 text-red-500" />
-                      Age
-                    </label>
-                    <input
-                      type="number"
-                      name="age"
-                      required
-                      placeholder="22"
-                      value={formData.age}
-                      onChange={handleChange}
-                      className="w-full bg-[#18202c] border border-[#232d3f] rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-red-600 transition-colors"
-                    />
-                  </div>
-
+                {/* Birthday & Gender Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <label className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5 text-red-500" />

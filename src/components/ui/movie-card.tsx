@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router"; // Use "react-router" for v7
 import { Calendar, Armchair, MapPin, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuthGuard } from "@/lib/auth";
 
 interface MovieCardProps {
   id?: string | number;
@@ -35,10 +36,20 @@ export function MovieCard({
   onViewDetails,
 }: MovieCardProps) {
   const navigate = useNavigate();
+  const { requireAuth } = useAuthGuard();
   const [fav, setFav] = useState(isFavorite);
 
+  useEffect(() => {
+    setFav(isFavorite);
+  }, [isFavorite]);
+
   const handleFavoriteClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevents triggering card navigation
+    e.stopPropagation();
+
+    if (!requireAuth()) {
+      return;
+    }
+
     const nextState = !fav;
     setFav(nextState);
     if (onToggleFavorite) {

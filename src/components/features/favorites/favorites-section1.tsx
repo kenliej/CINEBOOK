@@ -2,105 +2,26 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { FavoriteCard } from "@/components/ui/favorite-card";
 
-// Mock saved favorites data
-const INITIAL_FAVORITES = [
-  {
-    id: "1",
-    title: "Demon Slayer: Infinity Castle",
-    genres: ["Action", "Adventure", "Fantasy"],
-    date: "Aug 30, 2025",
-    time: "1:00 PM",
-    availableSeats: 120,
-    totalSeats: 150,
-    location: "SM City Cebu",
-    image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=500&auto=format&fit=crop",
-  },
-  {
-    id: "2",
-    title: "How to Train Your Dragon",
-    genres: ["Animation", "Adventure", "Family"],
-    date: "Aug 30, 2025",
-    time: "3:30 PM",
-    availableSeats: 98,
-    totalSeats: 120,
-    location: "Gaisano Grand",
-    image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop",
-  },
-  {
-    id: "3",
-    title: "John Wick 4",
-    genres: ["Action", "Thriller", "Crime"],
-    date: "Aug 30, 2025",
-    time: "6:00 PM",
-    availableSeats: 45,
-    totalSeats: 100,
-    location: "SM City Cebu",
-    image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=500&auto=format&fit=crop",
-  },
-  {
-    id: "4",
-    title: "Inside Out 2",
-    genres: ["Animation", "Comedy", "Family"],
-    date: "Aug 30, 2025",
-    time: "8:30 PM",
-    availableSeats: 200,
-    totalSeats: 200,
-    location: "Robinsons Galleria",
-    image: "https://images.unsplash.com/photo-1535016120720-40c646be5580?w=500&auto=format&fit=crop",
-  },
-  {
-    id: "5",
-    title: "The Batman",
-    genres: ["Action", "Crime", "Drama"],
-    date: "Aug 29, 2025",
-    time: "4:00 PM",
-    availableSeats: 0,
-    totalSeats: 120,
-    location: "SM City Cebu",
-    image: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=500&auto=format&fit=crop",
-  },
-  {
-    id: "6",
-    title: "Deadpool & Wolverine",
-    genres: ["Action", "Comedy", "Adventure"],
-    date: "Aug 30, 2025",
-    time: "11:00 AM",
-    availableSeats: 75,
-    totalSeats: 120,
-    location: "Gaisano Grand",
-    image: "https://images.unsplash.com/photo-1563089145-599997674d42?w=500&auto=format&fit=crop",
-  },
-  {
-    id: "7",
-    title: "Kung Fu Panda 4",
-    genres: ["Animation", "Action", "Comedy"],
-    date: "Aug 31, 2025",
-    time: "2:00 PM",
-    availableSeats: 110,
-    totalSeats: 150,
-    location: "SM City Cebu",
-    image: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=500&auto=format&fit=crop",
-  },
-  {
-    id: "8",
-    title: "The Super Mario Bros. Movie",
-    genres: ["Animation", "Adventure", "Family"],
-    date: "Aug 31, 2025",
-    time: "5:00 PM",
-    availableSeats: 95,
-    totalSeats: 120,
-    location: "Gaisano Grand",
-    image: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=500&auto=format&fit=crop",
-  },
-];
+interface FavoritesSection1Props {
+  favorites?: any[];
+  loading?: boolean;
+  refreshFavorites?: () => Promise<void>;
+}
 
-export function FavoritesSection1() {
-  const [favorites, setFavorites] = useState(INITIAL_FAVORITES);
+export function FavoritesSection1({ favorites: savedFavorites = [], loading = false, refreshFavorites }: FavoritesSection1Props) {
+  const [favorites, setFavorites] = useState(savedFavorites);
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 3;
+  const ITEMS_PER_PAGE = 9;
+  const totalPages = Math.max(1, Math.ceil(favorites.length / ITEMS_PER_PAGE));
+  const paginatedFavorites = favorites.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   const sectionRef = useRef<HTMLElement | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setFavorites(savedFavorites)
+    setCurrentPage((prev) => Math.min(prev, Math.max(1, Math.ceil(savedFavorites.length / ITEMS_PER_PAGE))))
+  }, [savedFavorites])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -120,8 +41,39 @@ export function FavoritesSection1() {
     return () => observer.disconnect();
   }, []);
 
-  const handleRemove = (id: string) => {
-    setFavorites((prev) => prev.filter((item) => item.id !== id));
+  const handleRemove = async (id: string) => {
+    const session = localStorage.getItem("cinebook_session");
+    if (!session) return;
+
+    try {
+      const parsed = JSON.parse(session);
+      const email = parsed?.user?.email;
+      if (!email) return;
+
+      const response = await fetch("http://localhost:8000/api/favorites/toggle", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          movie_id: String(id),
+          is_favorite: false,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to remove favorite");
+      }
+
+      setFavorites((prev) => prev.filter((item) => String(item.id ?? item.movie_id) !== String(id)));
+      if (refreshFavorites) {
+        await refreshFavorites();
+      }
+    } catch (error) {
+      console.error("Remove favorite error:", error);
+    }
   };
 
   return (
@@ -147,27 +99,29 @@ export function FavoritesSection1() {
 
       <div className="container mx-auto">
         {/* Responsive Grid Layout */}
-        {favorites.length > 0 ? (
+        {loading ? (
+          <div className="py-20 text-center text-gray-400">Loading favorites...</div>
+        ) : favorites.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {favorites.map((movie, index) => (
+            {paginatedFavorites.map((movie, index) => (
               <div
-                key={movie.id}
+                key={movie.id ?? movie.movie_id}
                 className={`w-full flex justify-center opacity-0 ${
                   isVisible ? "animate-card-up" : ""
                 }`}
                 style={{ animationDelay: `${index * 60}ms` }}
               >
                 <FavoriteCard
-                  id={movie.id}
+                  id={String(movie.id ?? movie.movie_id ?? "")}
                   image={movie.image}
-                  title={movie.title}
-                  genres={movie.genres}
+                  title={movie.title ?? movie.movie_title ?? "Favorite Movie"}
+                  genres={movie.genres ?? []}
                   date={movie.date}
                   time={movie.time}
-                  availableSeats={movie.availableSeats}
-                  totalSeats={movie.totalSeats}
+                  availableSeats={movie.availableSeats ?? 0}
+                  totalSeats={movie.totalSeats ?? 0}
                   location={movie.location}
-                  onRemove={() => handleRemove(movie.id)}
+                  onRemove={() => handleRemove(String(movie.id ?? movie.movie_id ?? ""))}
                   onViewDetails={() => {
                     // Navigate to details page
                   }}
@@ -183,7 +137,7 @@ export function FavoritesSection1() {
         )}
 
         {/* Pagination Bar */}
-        {favorites.length > 0 && (
+        {favorites.length > ITEMS_PER_PAGE && (
           <div className="flex items-center justify-center gap-3 mt-12 text-sm">
             {/* Previous Button */}
             <button

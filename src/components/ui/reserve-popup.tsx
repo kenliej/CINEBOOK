@@ -1,39 +1,207 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { X, Check, ChevronRight } from "lucide-react";
+import { getAuthSession } from "@/lib/auth";
 
 interface ReservePopupProps {
   isOpen: boolean;
   onClose: () => void;
   movie: {
+    id?: string | number;
     title: string;
     location: string;
     price: number;
     availableSeats: number;
+    time?: string;
+    genres?: string[];
+    image?: string;
   };
 }
+
+const RESERVATION_DRAFT_KEY = "cinebook_reservation_draft";
 
 export default function ReservePopup({ isOpen, onClose, movie }: ReservePopupProps) {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [ticketCount, setTicketCount] = useState<number | "">(1);
+  const [reservationId, setReservationId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [hasDraft, setHasDraft] = useState(false);
   const [formData, setFormData] = useState({
-    name: "Dudes Aro Inihao",
-    phone: "+63 912 345 6789",
-    email: "dudes@example.com",
+    name: "",
+    phone: "",
+    email: "",
     gender: "Male"
   });
+
+  useEffect(() => {
+    const session = getAuthSession();
+    setFormData({
+      name: session?.user?.name || session?.user?.first_name && session?.user?.last_name
+        ? `${session.user.first_name} ${session.user.last_name}`.trim()
+        : "",
+      phone: "",
+      email: session?.user?.email || "",
+      gender: "Male",
+    });
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const stored = localStorage.getItem(RESERVATION_DRAFT_KEY);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored) as { reservationId?: string; step?: number };
+        if (parsed.reservationId) {
+          setReservationId(parsed.reservationId);
+          setCurrentStep(parsed.step && parsed.step > 1 ? parsed.step : 1);
+          setHasDraft(true);
+          return;
+        }
+      } catch {
+        localStorage.removeItem(RESERVATION_DRAFT_KEY);
+      }
+    }
+
+    setHasDraft(false);
+    setReservationId(null);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   const resetAndClose = () => {
     setCurrentStep(1);
+    setReservationId(null);
+    setHasDraft(false);
+    setError("");
+    localStorage.removeItem(RESERVATION_DRAFT_KEY);
     onClose();
   };
 
-  const handleNextStep = (e: React.FormEvent) => {
+  const persistDraft = (nextReservationId: string | null, nextStep: number) => {
+    localStorage.setItem(
+      RESERVATION_DRAFT_KEY,
+      JSON.stringify({ reservationId: nextReservationId, step: nextStep })
+    );
+  };
+
+  const createReservation = async () => {
+    const session = getAuthSession();
+    if (!session?.user?.email) {
+      setError("You need to be logged in to reserve a ticket.");
+      return false;
+    }
+
+    setIsSubmitting(true);
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:8000/api/reservations/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          email: session.user.email,
+          movie_id: String(movie.id ?? ""),
+          movie_title: movie.title,
+          location: movie.location,
+          price: Number(movie.price),
+          ticket_count: Number(ticketCount) || 1,
+          customer_name: formData.name,
+          phone: formData.phone,
+          gender: formData.gender,
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Reservation could not be created.");
+      }
+
+      const nextReservationId = result.data?.id ?? null;
+      setReservationId(nextReservationId);
+      persistDraft(nextReservationId, 2);
+      setCurrentStep(2);
+      return true;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Reservation could not be created.");
+      return false;
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const completeReservation = async () => {
+    if (!reservationId) {
+      setError("Reservation record is missing. Please create it again.");
+      return false;
+    }
+
+    setIsSubmitting(true);
+    setError("");
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/reservations/${reservationId}/complete`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          payment_method: "GCash",
+          seats: Array.from({ length: Number(ticketCount) || 1 }, (_, idx) => {
+            const letter = String.fromCharCode(65 + (idx % 8));
+            return `${letter}${idx + 1}`;
+          }),
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Reservation could not be completed.");
+      }
+
+      localStorage.removeItem(RESERVATION_DRAFT_KEY);
+      setCurrentStep(3);
+      return true;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Reservation could not be completed.");
+      return false;
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleNextStep = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (currentStep < 3) setCurrentStep((prev) => prev + 1);
+
+    if (currentStep === 1) {
+      const ok = await createReservation();
+      if (!ok) {
+        return;
+      }
+      return;
+    }
+
+    if (currentStep === 2) {
+      if (!reservationId) {
+        setError("Reservation record is missing. Please create it again.");
+        return;
+      }
+
+      setCurrentStep(3);
+      persistDraft(reservationId, 3);
+      return;
+    }
+
+    if (currentStep === 3) {
+      const ok = await completeReservation();
+      if (!ok) return;
+    }
   };
 
   const steps = [
@@ -42,13 +210,11 @@ export default function ReservePopup({ isOpen, onClose, movie }: ReservePopupPro
     { id: 3, label: "Finish" }
   ];
 
-  const totalAmount = movie.price * (Number(ticketCount) || 0);
+  const totalAmount = Number(movie.price) * (Number(ticketCount) || 0);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
       <div className="bg-[#12171f] border border-[#1f2633] rounded-2xl max-w-lg w-full p-6 space-y-6 shadow-2xl relative">
-        
-        {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-800 pb-4">
           <div>
             <h2 className="text-lg font-bold text-white">Reserve Ticket</h2>
@@ -62,7 +228,23 @@ export default function ReservePopup({ isOpen, onClose, movie }: ReservePopupPro
           </button>
         </div>
 
-        {/* Stepper Bar */}
+        {hasDraft && currentStep === 1 && (
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-100">
+            <span>Resume your pending reservation</span>
+            <button
+              type="button"
+              onClick={() => {
+                setCurrentStep(2);
+                setHasDraft(false);
+                persistDraft(reservationId, 2);
+              }}
+              className="rounded-full bg-amber-500/20 px-2.5 py-1 font-semibold text-amber-200 hover:bg-amber-500/30"
+            >
+              Resume
+            </button>
+          </div>
+        )}
+
         <div className="flex items-center justify-between px-2">
           {steps.map((step, idx) => (
             <div key={step.id} className="flex items-center gap-2">
@@ -91,7 +273,6 @@ export default function ReservePopup({ isOpen, onClose, movie }: ReservePopupPro
           ))}
         </div>
 
-        {/* Step Form Content */}
         <form onSubmit={handleNextStep} className="space-y-4">
           {currentStep === 1 && (
             <div className="space-y-3 py-2">
@@ -103,6 +284,7 @@ export default function ReservePopup({ isOpen, onClose, movie }: ReservePopupPro
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full bg-[#0b0e13] border border-[#1f2633] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500"
+                    required
                   />
                 </div>
                 <div className="space-y-1">
@@ -112,6 +294,7 @@ export default function ReservePopup({ isOpen, onClose, movie }: ReservePopupPro
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="w-full bg-[#0b0e13] border border-[#1f2633] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500"
+                    required
                   />
                 </div>
               </div>
@@ -124,6 +307,7 @@ export default function ReservePopup({ isOpen, onClose, movie }: ReservePopupPro
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full bg-[#0b0e13] border border-[#1f2633] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-red-500"
+                    required
                   />
                 </div>
                 <div className="space-y-1">
@@ -189,38 +373,77 @@ export default function ReservePopup({ isOpen, onClose, movie }: ReservePopupPro
             </div>
           )}
 
-          {/* Footer Controls */}
+          {error && (
+            <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-200">
+              {error}
+            </div>
+          )}
+
           <div className="flex items-center justify-between pt-4 border-t border-gray-800">
             {currentStep < 3 ? (
               <>
                 {currentStep > 1 ? (
                   <button
                     type="button"
-                    onClick={() => setCurrentStep((prev) => prev - 1)}
+                    onClick={() => {
+                      setCurrentStep((prev) => prev - 1);
+                      persistDraft(reservationId, currentStep - 1);
+                    }}
                     className="px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-xs font-semibold text-gray-300"
                   >
                     Back
                   </button>
                 ) : <div />}
 
-                <button
-                  type="submit"
-                  className="px-6 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white flex items-center gap-1.5 transition-all"
-                >
-                  <span>Next</span>
-                  <ChevronRight className="w-4 h-4" />
-                </button>
+                <div className="ml-auto flex items-center gap-2">
+                  {currentStep === 2 && reservationId && (
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        try {
+                          const response = await fetch(`http://localhost:8000/api/reservations/${reservationId}/cancel`, {
+                            method: "POST",
+                            headers: { Accept: "application/json" },
+                          });
+                          if (response.ok) {
+                            localStorage.removeItem(RESERVATION_DRAFT_KEY);
+                            resetAndClose();
+                            navigate("/transactions");
+                            return;
+                          }
+                        } catch {}
+                        localStorage.removeItem(RESERVATION_DRAFT_KEY);
+                        resetAndClose();
+                      }}
+                      className="px-4 py-2 rounded-xl bg-gray-700 hover:bg-gray-600 text-xs font-semibold text-white"
+                    >
+                      Cancel
+                    </button>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="px-6 py-2 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-60 text-xs font-bold text-white flex items-center gap-1.5 transition-all"
+                  >
+                    <span>{isSubmitting ? "Processing..." : currentStep === 1 ? "Create Pending" : "Continue"}</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
               </>
             ) : (
               <button
                 type="button"
-                onClick={() => {
+                onClick={async () => {
+                  const ok = await completeReservation();
+                  if (!ok) return;
                   resetAndClose();
                   navigate("/transactions");
                 }}
-                className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-bold text-white flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-600/30"
+                disabled={isSubmitting}
+                className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-xs font-bold text-white flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-600/30"
               >
-                <span>View Transactions</span>
+                <span>{isSubmitting ? "Completing..." : "View Transactions"}</span>
                 <ChevronRight className="w-4 h-4" />
               </button>
             )}

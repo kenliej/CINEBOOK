@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { User, Mail, Phone, Calendar, MapPin, Hash, Users } from "lucide-react";
 
-export function ProfileSection1() {
+interface ProfileSection1Props {
+  profile?: any;
+  loading?: boolean;
+}
+
+export function ProfileSection1({ profile, loading = false }: ProfileSection1Props) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -54,12 +59,14 @@ export function ProfileSection1() {
           </div>
         </div>
 
-        {/* Profile Card Container */}
-        <div 
-          className={`bg-[#12171f] border border-[#1f2633] rounded-2xl p-6 md:p-8 opacity-0 ${
-            isVisible ? "animate-card-up" : ""
-          }`}
-        >
+        {loading ? (
+          <div className="py-12 text-center text-gray-400">Loading profile...</div>
+        ) : profile ? (
+          <div 
+            className={`bg-[#12171f] border border-[#1f2633] rounded-2xl p-6 md:p-8 opacity-0 ${
+              isVisible ? "animate-card-up" : ""
+            }`}
+          >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
             {/* First Name */}
@@ -70,7 +77,7 @@ export function ProfileSection1() {
               </label>
               <input
                 type="text"
-                value="Dudes"
+                value={profile.first_name || ""}
                 readOnly
                 className="w-full bg-[#18202c] border border-[#232d3f] rounded-xl px-4 py-3 text-sm text-white focus:outline-none cursor-default"
               />
@@ -84,7 +91,7 @@ export function ProfileSection1() {
               </label>
               <input
                 type="text"
-                value="Aro"
+                value={profile.middle_name || ""}
                 readOnly
                 className="w-full bg-[#18202c] border border-[#232d3f] rounded-xl px-4 py-3 text-sm text-white focus:outline-none cursor-default"
               />
@@ -98,7 +105,7 @@ export function ProfileSection1() {
               </label>
               <input
                 type="text"
-                value="Inihao"
+                value={profile.last_name || ""}
                 readOnly
                 className="w-full bg-[#18202c] border border-[#232d3f] rounded-xl px-4 py-3 text-sm text-white focus:outline-none cursor-default"
               />
@@ -112,7 +119,7 @@ export function ProfileSection1() {
               </label>
               <input
                 type="text"
-                value="22"
+                value={profile.age || ""}
                 readOnly
                 className="w-full bg-[#18202c] border border-[#232d3f] rounded-xl px-4 py-3 text-sm text-white focus:outline-none cursor-default"
               />
@@ -126,7 +133,7 @@ export function ProfileSection1() {
               </label>
               <input
                 type="text"
-                value="July 26, 2004"
+                value={profile.birthday || ""}
                 readOnly
                 className="w-full bg-[#18202c] border border-[#232d3f] rounded-xl px-4 py-3 text-sm text-white focus:outline-none cursor-default"
               />
@@ -140,7 +147,7 @@ export function ProfileSection1() {
               </label>
               <input
                 type="text"
-                value="Male"
+                value={profile.gender || ""}
                 readOnly
                 className="w-full bg-[#18202c] border border-[#232d3f] rounded-xl px-4 py-3 text-sm text-white focus:outline-none cursor-default"
               />
@@ -154,7 +161,7 @@ export function ProfileSection1() {
               </label>
               <input
                 type="text"
-                value="+63 912 345 6789"
+                value={profile.phone || ""}
                 readOnly
                 className="w-full bg-[#18202c] border border-[#232d3f] rounded-xl px-4 py-3 text-sm text-white focus:outline-none cursor-default"
               />
@@ -168,7 +175,7 @@ export function ProfileSection1() {
               </label>
               <input
                 type="email"
-                value="dudes.inihao@example.com"
+                value={profile.email || ""}
                 readOnly
                 className="w-full bg-[#18202c] border border-[#232d3f] rounded-xl px-4 py-3 text-sm text-white focus:outline-none cursor-default"
               />
@@ -182,7 +189,7 @@ export function ProfileSection1() {
               </label>
               <input
                 type="text"
-                value="Cordova, Cebu, Philippines"
+                value={profile.address || ""}
                 readOnly
                 className="w-full bg-[#18202c] border border-[#232d3f] rounded-xl px-4 py-3 text-sm text-white focus:outline-none cursor-default"
               />
@@ -190,6 +197,9 @@ export function ProfileSection1() {
 
           </div>
         </div>
+        ) : (
+          <div className="py-12 text-center text-gray-400">Profile data unavailable.</div>
+        )}
 
       </div>
     </section>

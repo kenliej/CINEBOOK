@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { Heart, Calendar, MapPin, Film, Armchair, ArrowRight, Trash2 } from "lucide-react";
+import { Heart, Calendar, MapPin, Film, Armchair, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export interface FavoriteCardProps {
@@ -59,9 +59,14 @@ export function FavoriteCard({
             <h3 className="text-base sm:text-lg font-bold text-white truncate leading-snug">
               {title}
             </h3>
-            <div className="p-1.5 rounded-full bg-red-600/10 text-red-600 shrink-0">
+            <button
+              type="button"
+              aria-label="Remove from favorites"
+              onClick={onRemove}
+              className="p-1.5 rounded-full bg-red-600/10 text-red-600 shrink-0 transition hover:bg-red-600/20"
+            >
               <Heart className="w-4 h-4 fill-red-600" />
-            </div>
+            </button>
           </div>
 
           {/* Metadata List */}
@@ -95,9 +100,8 @@ export function FavoriteCard({
         </div>
       </div>
 
-      {/* Action Buttons Section */}
-      <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-800/60">
-        {/* View Details Button */}
+      {/* Action Button Section */}
+      <div className="pt-2 border-t border-gray-800/60">
         <Button
           variant="primary"
           onClick={handleViewDetails}
@@ -105,16 +109,6 @@ export function FavoriteCard({
         >
           <span>View Details</span>
           <ArrowRight className="w-4 h-4" />
-        </Button>
-
-        {/* Remove Button */}
-        <Button
-          variant="secondary"
-          onClick={onRemove}
-          className="w-full flex items-center justify-center gap-1.5 py-2.5 text-xs sm:text-sm"
-        >
-          <Trash2 className="w-4 h-4 text-red-500" />
-          <span>Remove</span>
         </Button>
       </div>
 
